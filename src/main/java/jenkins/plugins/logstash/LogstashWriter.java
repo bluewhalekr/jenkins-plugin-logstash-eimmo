@@ -44,6 +44,7 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
 /**
  * A writer that wraps all Logstash DAOs.  Handles error reporting and per build connection state.
@@ -145,8 +146,11 @@ public class LogstashWriter implements Serializable {
         // Continue with error info as logstash payload
         logLines = Arrays.asList(msg.split("\n"));
       }
+      List<String> newLogLines = new ArrayList<>();
 
-      write(logLines);
+      logLines.forEach(log -> newLogLines.add(log.replaceAll("(\u001B\\[[;\\d]*m)|(\\[35m)", "")));
+
+      write(newLogLines);
     }
   }
 
@@ -179,7 +183,12 @@ public class LogstashWriter implements Serializable {
    */
   private void write(List<String> lines) {
     buildData.updateResult();
-    JSONObject payload = dao.buildPayload(buildData, jenkinsUrl, lines);
+    List<String> newLines = new ArrayList<>();
+
+    lines.forEach(line -> newLines.add(line.replaceAll("(\u001B\\[[;\\d]*m)|(\\[35m)", "")));
+
+    JSONObject payload = dao.buildPayload(buildData, jenkinsUrl, newLines);
+
     try {
       dao.push(payload.toString());
     } catch (IOException e) {

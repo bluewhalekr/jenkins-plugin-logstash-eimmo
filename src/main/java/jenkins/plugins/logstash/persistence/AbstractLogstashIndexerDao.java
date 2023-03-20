@@ -27,6 +27,8 @@ package jenkins.plugins.logstash.persistence;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import jenkins.plugins.logstash.LogstashConfiguration;
 import net.sf.json.JSONObject;
@@ -39,16 +41,29 @@ import net.sf.json.JSONObject;
  */
 public abstract class AbstractLogstashIndexerDao implements LogstashIndexerDao, Serializable {
 
+  Pattern regexLevel = Pattern.compile("WARN|ERR|INFO|QUERY");
+  
   @Override
   public JSONObject buildPayload(BuildData buildData, String jenkinsUrl, List<String> logLines) {
     JSONObject payload = new JSONObject();
     payload.put("data", buildData.toJson());
     payload.put("message", logLines);
     payload.put("source", "jenkins");
-    payload.put("source_host", jenkinsUrl);
     payload.put("@buildTimestamp", buildData.getTimestamp());
     payload.put("@timestamp", LogstashConfiguration.getInstance().getDateFormatter().format(Calendar.getInstance().getTime()));
     payload.put("@version", 1);
+    
+    String logLevel = "None";
+    try {
+        Matcher matcher = regexLevel.matcher(logLines.get(0));
+        if (matcher.find()) {
+        	payload.put("log_level", matcher.group(0));
+        } else {
+            payload.put("log_level", logLevel);
+        }
+    } catch (Exception e) {	
+        payload.put("log_level", logLevel);
+    }
 
     return payload;
   }

@@ -157,23 +157,23 @@ public class BuildData implements Serializable {
 
   private String id;
   private String result;
-  private String projectName;
+//  private String projectName;
   private String fullProjectName;
-  private String displayName;
-  private String fullDisplayName;
+//  private String displayName;
+//  private String fullDisplayName;
   private String description;
   private String url;
   private String buildHost;
-  private String buildLabel;
+//  private String buildLabel;
   private String stageName;
   private String agentName;
   private int buildNum;
   private long buildDuration;
   private transient String timestamp; // This belongs in the root object
   private transient Run<?, ?> build;
-  private String rootProjectName;
-  private String rootFullProjectName;
-  private String rootProjectDisplayName;
+//  private String rootProjectName;
+//  private String rootFullProjectName;
+//  private String rootProjectDisplayName;
   private int rootBuildNum;
   private Map<String, String> buildVariables;
   private Set<String> sensitiveBuildVariables;
@@ -184,38 +184,38 @@ public class BuildData implements Serializable {
     initData(build, currentTime);
 
     // build.getDuration() is always 0 in Notifiers
-    rootProjectName = build.getRootBuild().getProject().getName();
-    rootFullProjectName = build.getRootBuild().getProject().getFullName();
-    rootProjectDisplayName = build.getRootBuild().getDisplayName();
+//    rootProjectName = build.getRootBuild().getProject().getName();
+//    rootFullProjectName = build.getRootBuild().getProject().getFullName();
+//    rootProjectDisplayName = build.getRootBuild().getDisplayName();
     rootBuildNum = build.getRootBuild().getNumber();
-    buildVariables = build.getBuildVariables();
-    sensitiveBuildVariables = build.getSensitiveBuildVariables();
+//    buildVariables = build.getBuildVariables();
+//    sensitiveBuildVariables = build.getSensitiveBuildVariables();
 
     // Get environment build variables and merge them into the buildVariables map
-    Map<String, String> buildEnvVariables = new HashMap<>();
-    List<Environment> buildEnvironments = build.getEnvironments();
-    if (buildEnvironments != null) {
-      for (Environment env : buildEnvironments) {
-        if (env == null) {
-          continue;
-        }
-
-        env.buildEnvVars(buildEnvVariables);
-        if (!buildEnvVariables.isEmpty()) {
-          buildVariables.putAll(buildEnvVariables);
-          buildEnvVariables.clear();
-        }
-      }
-    }
-    try {
-      buildVariables.putAll(build.getEnvironment(listener));
-    } catch (Exception e) {
-      // no base build env vars to merge
-      LOGGER.log(WARNING,"Unable update logstash buildVariables with EnvVars from " + build.getDisplayName(),e);
-    }
-    for (String key : sensitiveBuildVariables) {
-      buildVariables.remove(key);
-    }
+//    Map<String, String> buildEnvVariables = new HashMap<>();
+//    List<Environment> buildEnvironments = build.getEnvironments();
+//    if (buildEnvironments != null) {
+//      for (Environment env : buildEnvironments) {
+//        if (env == null) {
+//          continue;
+//        }
+//
+//        env.buildEnvVars(buildEnvVariables);
+//        if (!buildEnvVariables.isEmpty()) {
+//          buildVariables.putAll(buildEnvVariables);
+//          buildEnvVariables.clear();
+//        }
+//      }
+//    }
+//    try {
+//      buildVariables.putAll(build.getEnvironment(listener));
+//    } catch (Exception e) {
+//      // no base build env vars to merge
+//      LOGGER.log(WARNING,"Unable update logstash buildVariables with EnvVars from " + build.getDisplayName(),e);
+//    }
+//    for (String key : sensitiveBuildVariables) {
+//      buildVariables.remove(key);
+//    }
   }
 
   // Pipeline project build
@@ -224,18 +224,18 @@ public class BuildData implements Serializable {
 
     this.agentName = agentName;
     this.stageName = stageName;
-    rootProjectName = projectName;
-    rootFullProjectName = fullProjectName;
-    rootProjectDisplayName = displayName;
+//    rootProjectName = projectName;
+//    rootFullProjectName = fullProjectName;
+//    rootProjectDisplayName = displayName;
     rootBuildNum = buildNum;
 
-    try {
-      // TODO: sensitive variables are not filtered, c.f. https://stackoverflow.com/questions/30916085
-      buildVariables = build.getEnvironment(listener);
-    } catch (IOException | InterruptedException e) {
-      LOGGER.log(WARNING,"Unable to get environment for " + build.getDisplayName(),e);
-      buildVariables = new HashMap<>();
-    }
+//    try {
+//      // TODO: sensitive variables are not filtered, c.f. https://stackoverflow.com/questions/30916085
+//      buildVariables = build.getEnvironment(listener);
+//    } catch (IOException | InterruptedException e) {
+//      LOGGER.log(WARNING,"Unable to get environment for " + build.getDisplayName(),e);
+//      buildVariables = new HashMap<>();
+//    }
   }
 
   private void initData(Run<?, ?> build, Date currentTime) {
@@ -244,25 +244,25 @@ public class BuildData implements Serializable {
     Executor executor = build.getExecutor();
     if (executor == null) {
         buildHost = "master";
-        buildLabel = "master";
+//        buildLabel = "master";
     } else {
         Node node = executor.getOwner().getNode();
         if (node == null) {
           buildHost = "master";
-          buildLabel = "master";
+//          buildLabel = "master";
         } else {
           buildHost = StringUtils.isBlank(node.getDisplayName()) ? "master" : node.getDisplayName();
-          buildLabel = StringUtils.isBlank(node.getLabelString()) ? "master" : node.getLabelString();
+//          buildLabel = StringUtils.isBlank(node.getLabelString()) ? "master" : node.getLabelString();
         }
     }
 
     id = build.getId();
-    projectName = build.getParent().getName();
+//    projectName = build.getParent().getName();
     fullProjectName = build.getParent().getFullName();
-    displayName = build.getDisplayName();
-    fullDisplayName = build.getFullDisplayName();
+//    displayName = build.getDisplayName();
+//    fullDisplayName = build.getFullDisplayName();
     description = build.getDescription();
-    url = build.getUrl();
+//    url = build.getUrl();
     buildNum = build.getNumber();
     buildDuration = currentTime.getTime() - build.getStartTimeInMillis();
     timestamp = LogstashConfiguration.getInstance().getDateFormatter().format(build.getTimestamp().getTime());
@@ -310,14 +310,14 @@ public class BuildData implements Serializable {
     this.result = result.toString();
   }
 
-  public String getProjectName() {
-    return projectName;
-  }
-
-  public void setProjectName(String projectName) {
-    this.projectName = projectName;
-  }
-
+//  public String getProjectName() {
+//    return projectName;
+//  }
+//
+//  public void setProjectName(String projectName) {
+//    this.projectName = projectName;
+//  }
+//
   public String getFullProjectName() {
     return fullProjectName;
   }
@@ -326,21 +326,21 @@ public class BuildData implements Serializable {
     this.fullProjectName = fullProjectName;
   }
 
-  public String getDisplayName() {
-    return displayName;
-  }
-
-  public void setDisplayName(String displayName) {
-    this.displayName = displayName;
-  }
-
-  public String getFullDisplayName() {
-    return fullDisplayName;
-  }
-
-  public void setFullDisplayName(String fullDisplayName) {
-    this.fullDisplayName = fullDisplayName;
-  }
+//  public String getDisplayName() {
+//    return displayName;
+//  }
+//
+//  public void setDisplayName(String displayName) {
+//    this.displayName = displayName;
+//  }
+//
+//  public String getFullDisplayName() {
+//    return fullDisplayName;
+//  }
+//
+//  public void setFullDisplayName(String fullDisplayName) {
+//    this.fullDisplayName = fullDisplayName;
+//  }
 
   public String getDescription() {
     return description;
@@ -350,13 +350,13 @@ public class BuildData implements Serializable {
     this.description = description;
   }
 
-  public String getUrl() {
-    return url;
-  }
-
-  public void setUrl(String url) {
-    this.url = url;
-  }
+//  public String getUrl() {
+//    return url;
+//  }
+//
+//  public void setUrl(String url) {
+//    this.url = url;
+//  }
 
   public String getBuildHost() {
     return buildHost;
@@ -366,13 +366,13 @@ public class BuildData implements Serializable {
     this.buildHost = buildHost;
   }
 
-  public String getBuildLabel() {
-    return buildLabel;
-  }
-
-  public void setBuildLabel(String buildLabel) {
-    this.buildLabel = buildLabel;
-  }
+//  public String getBuildLabel() {
+//    return buildLabel;
+//  }
+//
+//  public void setBuildLabel(String buildLabel) {
+//    this.buildLabel = buildLabel;
+//  }
 
   public int getBuildNum() {
     return buildNum;
@@ -398,29 +398,29 @@ public class BuildData implements Serializable {
     this.timestamp = LogstashConfiguration.getInstance().getDateFormatter().format(timestamp.getTime());
   }
 
-  public String getRootProjectName() {
-    return rootProjectName;
-  }
+//  public String getRootProjectName() {
+//    return rootProjectName;
+//  }
+//
+//  public void setRootProjectName(String rootProjectName) {
+//    this.rootProjectName = rootProjectName;
+//  }
+//
+//  public String getRootFullProjectName() {
+//    return rootFullProjectName;
+//  }
+//
+//  public void setRootFullProjectName(String rootFullProjectName) {
+//    this.rootFullProjectName = rootFullProjectName;
+//  }
 
-  public void setRootProjectName(String rootProjectName) {
-    this.rootProjectName = rootProjectName;
-  }
-
-  public String getRootFullProjectName() {
-    return rootFullProjectName;
-  }
-
-  public void setRootFullProjectName(String rootFullProjectName) {
-    this.rootFullProjectName = rootFullProjectName;
-  }
-
-  public String getRootProjectDisplayName() {
-    return rootProjectDisplayName;
-  }
-
-  public void setRootProjectDisplayName(String rootProjectDisplayName) {
-    this.rootProjectDisplayName = rootProjectDisplayName;
-  }
+//  public String getRootProjectDisplayName() {
+//    return rootProjectDisplayName;
+//  }
+//
+//  public void setRootProjectDisplayName(String rootProjectDisplayName) {
+//    this.rootProjectDisplayName = rootProjectDisplayName;
+//  }
 
   public int getRootBuildNum() {
     return rootBuildNum;
